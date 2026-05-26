@@ -28,6 +28,7 @@ import { buildOrder, createCheckoutProvider } from './payments.mjs';
 import {
   buildPaidPilotDashboard,
   buildPilotFromLead,
+  updatePilotOutcome,
 } from './pilots.mjs';
 import {
   addOutreachContact,
@@ -489,6 +490,20 @@ document.querySelector('#leadList').addEventListener('click', async (event) => {
   state.leads = updateLeadFollowUp(state.leads, lead.id, {
     status: 'Trial',
     followUpNote: lead.followUpNote || 'Created HK$99 paid pilot.',
+  });
+  await persistState();
+  renderAll();
+});
+
+document.querySelector('#paidPilotAlerts').addEventListener('submit', async (event) => {
+  const form = event.target.closest('.pilot-outcome-form');
+  if (!form) return;
+  event.preventDefault();
+
+  const data = new FormData(form);
+  state.paidPilots = updatePilotOutcome(state.paidPilots ?? [], form.dataset.pilotId, {
+    day7Outcome: data.get('day7Outcome'),
+    notes: data.get('notes'),
   });
   await persistState();
   renderAll();
