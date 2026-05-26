@@ -30,7 +30,12 @@ import {
   markOutreachSent,
 } from './outreach.mjs';
 import { runtimeConfig } from './runtime-config.js';
-import { createStateStore, getDefaultState } from './storage.mjs';
+import {
+  buildStateBackup,
+  createStateStore,
+  getDefaultState,
+  parseStateBackup,
+} from './storage.mjs';
 
 let authStore;
 let session = { user: null, role: 'guest', mode: 'signed-out' };
@@ -352,8 +357,8 @@ function renderAll() {
   renderReminders();
 }
 
-function downloadTextFile(filename, text) {
-  const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+function downloadTextFile(filename, text, type = 'text/csv;charset=utf-8') {
+  const url = URL.createObjectURL(new Blob([text], { type }));
   const link = document.createElement('a');
   link.href = url;
   link.download = filename;
@@ -417,6 +422,35 @@ document.querySelector('#leadList').addEventListener('submit', async (event) => 
 
 document.querySelector('#exportLeadsButton').addEventListener('click', () => {
   downloadTextFile('silvercare-leads.csv', buildLeadCsv(state.leads));
+});
+
+document.querySelector('#exportBackupButton').addEventListener('click', () => {
+  downloadTextFile(
+    `silvercare-backup-${new Date().toISOString().slice(0, 10)}.json`,
+    buildStateBackup(state),
+    'application/json;charset=utf-8',
+  );
+});
+
+document.querySelector('#importBackupButton').addEventListener('click', () => {
+  document.querySelector('#importBackupInput').click();
+});
+
+document.querySelector('#importBackupInput').addEventListener('change', async (event) => {
+  const [file] = event.currentTarget.files;
+  if (!file) return;
+
+  try {
+    const backup = parseStateBackup(await file.text());
+    state = backup.state;
+    await persistState();
+    renderAll();
+    renderStorageStatus(`已匯入備份：${backup.exportedAt}`);
+  } catch (error) {
+    renderStorageStatus(`匯入失敗：${error.message}`);
+  } finally {
+    event.currentTarget.value = '';
+  }
 });
 
 document.querySelector('#outreachForm').addEventListener('submit', async (event) => {

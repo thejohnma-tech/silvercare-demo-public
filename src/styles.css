@@ -302,6 +302,19 @@ label {
   font-weight: 700;
 }
 
+.checkbox-label {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.checkbox-label input {
+  width: auto;
+  margin-top: 3px;
+}
+
 input,
 select,
 textarea {
