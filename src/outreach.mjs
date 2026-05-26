@@ -6,17 +6,31 @@ export function buildDemoUrl(publicUrl) {
 
 export function buildOutreachMessage({ publicUrl, variant = 'warm' }) {
   const demoUrl = buildDemoUrl(publicUrl);
-  const openers = {
-    warm: '你好，我正在測試一個香港家庭用的安心照顧助手。',
-    caregiver: '你好，想分享一個幫照顧者記錄提醒和防騙問題的小工具。',
-    referral: '你好，朋友介紹我可以同你分享一個長者照顧跟進工具。',
-  };
+
+  if (variant === 'referral') {
+    return [
+      'Hi，我係 John。朋友話你可能有幫屋企長輩跟進日常事項。',
+      '我做緊一個「長者安心跟進」demo，幫家人追蹤防騙提醒、覆診、食藥同家庭待辦。',
+      `可以直接試，不用登入：${demoUrl}`,
+      '服務唔涉及醫療診斷、緊急救援、銀行資料、密碼或 OTP。',
+      '你試完可唔可以話我知：HK$99/月，你會唔會試？',
+    ].join('\n\n');
+  }
+
+  if (variant === 'caregiver') {
+    return [
+      'Hi，我最近做緊一個照顧長者家庭用的 demo。',
+      '它主要幫家人記錄和提醒防騙、覆診、食藥同家庭待辦，適合不想日日靠記憶或 WhatsApp 搵紀錄的家庭。',
+      `可以直接試，不用登入：${demoUrl}`,
+      '如果 HK$99/月，你覺得有冇機會試一個月？',
+    ].join('\n\n');
+  }
 
   return [
-    openers[variant] ?? openers.warm,
-    '安心照顧助手可以記錄覆診、食藥、可疑短訊、家庭跟進事項，也有防騙 FAQ。',
-    `這是試用 demo：${demoUrl}`,
-    '如果每月 HK$99/月起，你會不會想試用？有任何照顧痛點也可以直接回覆我。',
+    'Hi，我最近做緊一個「安心照顧助手」demo，幫香港家庭記錄同提醒父母嘅防騙、覆診、食藥同家庭待辦。',
+    `你可以直接試，不用登入：${demoUrl}`,
+    '我唔係想硬 sell，係想搵 10 個有照顧父母經驗嘅人俾真 feedback。',
+    '你試完可唔可以直接答我：如果 HK$99/月，你會唔會試？',
   ].join('\n\n');
 }
 
