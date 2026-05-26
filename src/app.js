@@ -25,7 +25,10 @@ import {
   resolveFollowUpTask,
 } from './marketing.mjs';
 import { buildOrder, createCheckoutProvider } from './payments.mjs';
-import { buildPaidPilotDashboard } from './pilots.mjs';
+import {
+  buildPaidPilotDashboard,
+  buildPilotFromLead,
+} from './pilots.mjs';
 import {
   addOutreachContact,
   markOutreachSent,
@@ -168,19 +171,37 @@ function renderPaidPilots() {
   `).join('');
 
   const list = document.querySelector('#paidPilotAlerts');
-  if (!dashboard.alerts.length) {
-    list.innerHTML = '<p class="empty-state">No paid pilot alerts yet.</p>';
+  if (!state.paidPilots?.length) {
+    list.innerHTML = '<p class="empty-state">將 Trial lead 轉成 HK$99 paid pilot 後，會在這裡追蹤 7 日 check-in 和退款期限。</p>';
     return;
   }
 
-  list.innerHTML = dashboard.alerts.map((alert) => `
+  list.innerHTML = state.paidPilots.map((pilot) => `
     <article class="order-card">
       <div>
-        <span class="status-pill due">${escapeHtml(alert.status)}</span>
-        <span class="priority">${escapeHtml(alert.action)}</span>
+        <span class="status-pill ${pilot.day7Outcome ? '' : 'due'}">${escapeHtml(pilot.status)}</span>
+        <span class="priority">${escapeHtml(pilot.day7Outcome || 'awaiting day-7')}</span>
       </div>
-      <h4>${escapeHtml(alert.customerName)}</h4>
-      <small>Paid pilot follow-up</small>
+      <h4>${escapeHtml(pilot.customerName)}</h4>
+      <p>HK$99 / 30 日 pilot · ${escapeHtml(pilot.whatsApp)}</p>
+      <small>Start ${escapeHtml(pilot.pilotStartDate)} · Day-7 ${escapeHtml(pilot.day7CheckInDate)} · Refund until ${escapeHtml(pilot.refundDeadline)}</small>
+      <form class="pilot-outcome-form" data-pilot-id="${escapeHtml(pilot.id)}">
+        <label>
+          Day-7 結果
+          <select name="day7Outcome">
+            <option value="" ${pilot.day7Outcome ? '' : 'selected'}>未跟進</option>
+            <option value="continue" ${pilot.day7Outcome === 'continue' ? 'selected' : ''}>想繼續</option>
+            <option value="needs-change" ${pilot.day7Outcome === 'needs-change' ? 'selected' : ''}>要改功能</option>
+            <option value="refund" ${pilot.day7Outcome === 'refund' ? 'selected' : ''}>退款</option>
+            <option value="no-reply" ${pilot.day7Outcome === 'no-reply' ? 'selected' : ''}>未回覆</option>
+          </select>
+        </label>
+        <label>
+          Pilot 備註
+          <textarea name="notes" placeholder="例如：想繼續月費，最重視防騙提醒。">${escapeHtml(pilot.notes ?? '')}</textarea>
+        </label>
+        <button class="secondary-action" type="submit">更新 pilot</button>
+      </form>
     </article>
   `).join('');
 }
@@ -271,6 +292,7 @@ function renderLeads() {
         </label>
         <div class="lead-actions">
           <a class="secondary-action" href="${escapeHtml(buildWhatsappLink(lead))}" target="_blank" rel="noreferrer">WhatsApp</a>
+          <button class="secondary-action" type="button" data-create-pilot="${escapeHtml(lead.id)}">Create HK$99 pilot</button>
           <button class="primary-action" type="submit">更新跟進</button>
         </div>
       </form>
@@ -446,6 +468,27 @@ document.querySelector('#leadList').addEventListener('submit', async (event) => 
   state.leads = updateLeadFollowUp(state.leads, form.dataset.leadId, {
     status: data.get('status'),
     followUpNote: data.get('followUpNote'),
+  });
+  await persistState();
+  renderAll();
+});
+
+document.querySelector('#leadList').addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-create-pilot]');
+  if (!button) return;
+  const lead = (state.leads ?? []).find((item) => item.id === button.dataset.createPilot);
+  if (!lead) return;
+
+  const alreadyExists = (state.paidPilots ?? []).some((pilot) => pilot.source === lead.id);
+  if (!alreadyExists) {
+    state.paidPilots = [
+      buildPilotFromLead({ lead }),
+      ...(state.paidPilots ?? []),
+    ];
+  }
+  state.leads = updateLeadFollowUp(state.leads, lead.id, {
+    status: 'Trial',
+    followUpNote: lead.followUpNote || 'Created HK$99 paid pilot.',
   });
   await persistState();
   renderAll();

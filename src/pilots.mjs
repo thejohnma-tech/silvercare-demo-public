@@ -181,6 +181,11 @@ export function buildPaidPilotDashboard(rows, today = new Date()) {
       { label: 'Follow-up due', value: result.dueCheckIns.length, helper: '7-day check-ins waiting' },
       { label: 'Refund risk', value: result.refundRisk.length, helper: 'Deadline within 2 days' },
     ],
+    pilots: paidRows.map((pilot) => ({
+      customerName: customerLabel(pilot),
+      status: pilot.status || 'active',
+      action: pilot.day7Outcome === 'continue' ? 'Ready to convert' : 'Paid pilot active',
+    })),
     alerts,
   };
 }
