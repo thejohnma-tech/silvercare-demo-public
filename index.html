@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>安心照顧助手 | SilverCare</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./src/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div>
+          <p class="eyebrow">SilverCare</p>
+          <h1>香港家庭長者安心跟進</h1>
+        </div>
+        <nav class="nav-list" aria-label="主要功能">
+          <a href="#landing">收客頁</a>
+          <a href="#dashboard">概覽</a>
+          <a href="#plans">方案</a>
+          <a href="#tickets">跟進事項</a>
+          <a href="#assistant">防騙 FAQ</a>
+          <a href="#reminders">提醒</a>
+        </nav>
+        <div class="policy-note">
+          安全政策：不收集密碼、OTP、銀行資料、轉帳指示、醫療診斷或投資建議。疑似詐騙請致電 18222，緊急情況請致電 999。
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <section class="landing-hero" id="landing">
+          <div class="landing-copy">
+            <p class="eyebrow">SilverCare for Hong Kong Families</p>
+            <h2>在外子女也能安心跟進父母日常</h2>
+            <p class="hero-subhead">為香港家庭自動整理防騙、覆診、食藥、付款和跟進事項，先用零固定月費 MVP 跑通收客流程。</p>
+            <div class="hero-actions">
+              <a class="primary-action link-action" href="#authPanel">試用工作台</a>
+              <a class="secondary-link" href="#plans">查看月費方案</a>
+            </div>
+            <div class="hero-metrics" aria-label="產品指標">
+              <div><strong>HK$0</strong><span>固定月費起步</span></div>
+              <div><strong>3</strong><span>月費方案</span></div>
+              <div><strong>18222</strong><span>防騙提示熱線</span></div>
+            </div>
+          </div>
+          <figure class="hero-visual">
+            <img src="./assets/silvercare-dashboard.png" alt="SilverCare dashboard showing paid order, scam alert, and reminder workflow">
+          </figure>
+        </section>
+
+        <section class="benefit-strip" aria-label="主要賣點">
+          <article>
+            <h3>防騙先行</h3>
+            <p>所有回覆都避開 OTP、密碼、銀行資料和轉帳指示，疑似詐騙會提示 18222。</p>
+          </article>
+          <article>
+            <h3>付款到工單</h3>
+            <p>客戶選月費方案後，系統建立付款訂單，再自動開家庭跟進事項。</p>
+          </article>
+          <article>
+            <h3>適合遠程營運</h3>
+            <p>先用本機 demo 和 Supabase 接駁位跑通，之後再接 Stripe、WhatsApp 或 AI API。</p>
+          </article>
+        </section>
+
+        <section class="section-block" id="leadCapture">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Lead Capture</p>
+              <h3>預約試用 / 收集查詢</h3>
+            </div>
+            <span class="status-pill" id="leadStatus">Ready</span>
+          </div>
+          <form id="leadForm" class="form-grid">
+            <label>
+              姓名
+              <input name="name" autocomplete="name" required placeholder="例如：Lee Wai">
+            </label>
+            <label>
+              WhatsApp
+              <input name="whatsapp" autocomplete="tel" required placeholder="+852 9000 1111">
+            </label>
+            <label>
+              想試用方案
+              <select name="preferredPlan" required>
+                <option value="self-serve">自助安心版 HK$99/月</option>
+                <option value="family-care" selected>家庭安心版 HK$199/月</option>
+                <option value="care-plus">安心進階版 HK$399/月</option>
+              </select>
+            </label>
+            <label>
+              最想解決的照顧痛點
+              <textarea name="painPoint" required placeholder="例如：爸爸成日收到可疑短訊，家人想遠程跟進。"></textarea>
+            </label>
+            <button class="primary-action" type="submit">提交試用查詢</button>
+          </form>
+        </section>
+
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">可銷售 MVP Demo</p>
+            <h2>為在外子女自動跟進父母的防騙、覆診、食藥和家庭待辦</h2>
+          </div>
+          <div class="topbar-actions">
+            <div class="storage-chip">
+              <span id="storageStatus">載入中</span>
+              <small id="storageDetail">正在準備 demo 資料</small>
+            </div>
+            <button class="icon-button" id="resetDemo" type="button" aria-label="重設 demo 資料" title="重設 demo 資料">↻</button>
+          </div>
+        </header>
+
+        <section class="login-panel" id="authPanel">
+          <div>
+            <p class="eyebrow">Demo Access</p>
+            <h3>登入試用工作台</h3>
+          </div>
+          <form id="authForm" class="form-grid compact">
+            <label>
+              電郵
+              <input name="email" type="email" autocomplete="email" required placeholder="owner@silvercare.test">
+            </label>
+            <label>
+              PIN / 密碼
+              <input name="secret" type="password" autocomplete="current-password" required placeholder="本機 demo PIN：2468">
+            </label>
+            <button class="secondary-action" type="submit">登入 demo</button>
+          </form>
+          <div class="signed-in-row" id="signedInRow" hidden>
+            <div>
+              <strong id="signedInEmail">未登入</strong>
+              <small id="signedInMode">Guest</small>
+            </div>
+            <button class="secondary-action" id="signOutButton" type="button">登出</button>
+          </div>
+          <p class="helper-text" id="authMessage">本機 demo 使用 PIN 2468。設定 Supabase 後可改用 email/password auth。</p>
+        </section>
+
+        <div id="protectedWorkspace" hidden>
+          <section class="login-panel" id="loginPanel">
+            <div>
+              <p class="eyebrow">家庭資料</p>
+              <h3>建立照顧者檔案</h3>
+            </div>
+            <form id="profileForm" class="form-grid">
+              <label>
+                姓名
+                <input name="name" autocomplete="name" required placeholder="例如：Chan Tai Man">
+              </label>
+              <label>
+                電話
+                <input name="phone" autocomplete="tel" required placeholder="+852 9123 4567">
+              </label>
+              <label>
+                電郵
+                <input name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+              </label>
+              <label>
+                與長者關係
+                <select name="relationship" required>
+                  <option value="子女">子女</option>
+                  <option value="配偶">配偶</option>
+                  <option value="親友">親友</option>
+                  <option value="照顧者">照顧者</option>
+                </select>
+              </label>
+              <button class="primary-action" type="submit">更新 dashboard</button>
+            </form>
+          </section>
+
+          <section id="dashboard" class="metric-grid" aria-live="polite"></section>
+
+          <section id="funnel" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Conversion Funnel</p>
+                <h3>搵客轉化漏斗</h3>
+              </div>
+              <span class="status-pill">Live metrics</span>
+            </div>
+            <div class="funnel-grid" id="funnelGrid" aria-live="polite"></div>
+          </section>
+
+          <section id="followUps" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Follow-up Queue</p>
+                <h3>今日要跟進</h3>
+              </div>
+              <span class="status-pill" id="followUpCount">0 items</span>
+            </div>
+            <div class="follow-up-list" id="followUpList"></div>
+          </section>
+
+          <section id="launchChecklist" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Launch Readiness</p>
+                <h3>出街前檢查</h3>
+              </div>
+              <span class="status-pill" id="launchStatus">Pending</span>
+            </div>
+            <div class="checklist-grid" id="launchChecklistGrid"></div>
+          </section>
+
+          <section id="plans" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Pricing</p>
+                <h3>選擇月費方案</h3>
+              </div>
+              <span class="status-pill" id="checkoutStatus">付款流程模擬</span>
+            </div>
+            <div class="plans-grid" id="plansGrid"></div>
+            <form id="checkoutForm" class="checkout-box">
+              <label>
+                你現在最想跟進的長者照顧事項
+                <textarea name="concern" required placeholder="例如：媽媽收到可疑電話，對方要求提供 OTP；爸爸下星期覆診但家人怕忘記。"></textarea>
+              </label>
+              <button class="primary-action" type="submit">模擬付款並建立跟進事項</button>
+            </form>
+          </section>
+
+          <section id="orders" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Payments</p>
+                <h3>付款訂單</h3>
+              </div>
+              <span class="status-pill">Provider-ready</span>
+            </div>
+            <div class="order-list" id="orderList"></div>
+          </section>
+
+          <section id="leads" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Pipeline</p>
+                <h3>試用查詢</h3>
+              </div>
+              <button class="secondary-action" id="exportLeadsButton" type="button">匯出 CSV</button>
+            </div>
+            <div class="lead-list" id="leadList"></div>
+          </section>
+
+          <section id="outreach" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">First 15</p>
+                <h3>第一批客 Outreach</h3>
+              </div>
+              <span class="status-pill" id="outreachCount">0 / 15</span>
+            </div>
+            <form id="outreachForm" class="form-grid compact">
+              <label>
+                姓名
+                <input name="name" required placeholder="例如：Amy">
+              </label>
+              <label>
+                WhatsApp
+                <input name="phone" placeholder="+852 9000 1111">
+              </label>
+              <label>
+                分類
+                <select name="segment">
+                  <option value="adult child">在外子女</option>
+                  <option value="caregiver">照顧者</option>
+                  <option value="friend referral">朋友轉介</option>
+                </select>
+              </label>
+              <button class="secondary-action" type="submit">加入名單</button>
+            </form>
+            <div class="outreach-list" id="outreachList"></div>
+          </section>
+
+          <section id="tickets" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Operations</p>
+                <h3>家庭跟進事項</h3>
+              </div>
+              <span class="status-pill">自動建立</span>
+            </div>
+            <div class="ticket-list" id="ticketList"></div>
+          </section>
+
+          <section id="assistant" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">FAQ Bot</p>
+                <h3>防騙與照顧 FAQ</h3>
+              </div>
+              <span class="status-pill">無 API 成本</span>
+            </div>
+            <div class="chat-window" id="chatWindow"></div>
+            <form id="chatForm" class="inline-form">
+              <input name="question" required placeholder="例如：爸爸收到短訊叫他輸入 OTP，應該點做？">
+              <button class="secondary-action" type="submit">送出</button>
+            </form>
+          </section>
+
+          <section id="reminders" class="section-block">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Scheduler</p>
+                <h3>覆診、食藥與家庭提醒</h3>
+              </div>
+              <span class="status-pill">本機排程模擬</span>
+            </div>
+            <form id="reminderForm" class="form-grid compact">
+              <label>
+                提醒標題
+                <input name="title" required placeholder="例如：提醒爸爸星期五覆診">
+              </label>
+              <label>
+                日期
+                <input name="date" type="date" required>
+              </label>
+              <button class="secondary-action" type="submit">加入提醒</button>
+            </form>
+            <div class="reminder-list" id="reminderList"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
