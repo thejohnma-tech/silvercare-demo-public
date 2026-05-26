@@ -1,4 +1,5 @@
 import { buildTicket } from './core.mjs';
+import { buildPilotFromLead } from './pilots.mjs';
 
 export function isPublicDemoRequest(search = '') {
   const params = new URLSearchParams(search);
@@ -21,6 +22,18 @@ export function createPublicDemoState(baseState) {
     packageId: 'family-care',
     concern: '媽媽收到可疑電話，對方要求提供 OTP。',
   });
+  const demoPilot = buildPilotFromLead({
+    lead: {
+      id: 'DEMO',
+      name: 'Demo Family',
+      whatsapp: '+852 9123 4567',
+      email: 'family@example.com',
+      source: 'public-demo',
+      painPoint: '7-day follow-up for HK$99 pilot',
+      relationship: '摮戊',
+    },
+    startDate: '2026-05-20',
+  });
 
   return {
     ...baseState,
@@ -32,6 +45,7 @@ export function createPublicDemoState(baseState) {
     },
     selectedPackageId: 'family-care',
     tickets: baseState.tickets.length ? baseState.tickets : [demoTicket],
+    paidPilots: (baseState.paidPilots ?? []).length ? baseState.paidPilots : [demoPilot],
     reminders: baseState.reminders.length ? baseState.reminders : [
       {
         id: 'REM-DEMO',

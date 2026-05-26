@@ -25,6 +25,7 @@ import {
   resolveFollowUpTask,
 } from './marketing.mjs';
 import { buildOrder, createCheckoutProvider } from './payments.mjs';
+import { buildPaidPilotDashboard } from './pilots.mjs';
 import {
   addOutreachContact,
   markOutreachSent,
@@ -151,6 +152,35 @@ function renderLaunchChecklist() {
       <span class="status-pill ${item.done ? '' : 'due'}">${item.done ? 'Ready' : 'Pending'}</span>
       <h4>${escapeHtml(item.label)}</h4>
       <p>${escapeHtml(item.helper)}</p>
+    </article>
+  `).join('');
+}
+
+function renderPaidPilots() {
+  const dashboard = buildPaidPilotDashboard(state.paidPilots ?? []);
+  document.querySelector('#paidPilotStatus').textContent = dashboard.recommendation;
+  document.querySelector('#paidPilotMetrics').innerHTML = dashboard.metrics.map((metric) => `
+    <article class="funnel-card">
+      <span>${escapeHtml(metric.label)}</span>
+      <strong>${escapeHtml(metric.value)}</strong>
+      <small>${escapeHtml(metric.helper)}</small>
+    </article>
+  `).join('');
+
+  const list = document.querySelector('#paidPilotAlerts');
+  if (!dashboard.alerts.length) {
+    list.innerHTML = '<p class="empty-state">No paid pilot alerts yet.</p>';
+    return;
+  }
+
+  list.innerHTML = dashboard.alerts.map((alert) => `
+    <article class="order-card">
+      <div>
+        <span class="status-pill due">${escapeHtml(alert.status)}</span>
+        <span class="priority">${escapeHtml(alert.action)}</span>
+      </div>
+      <h4>${escapeHtml(alert.customerName)}</h4>
+      <small>Paid pilot follow-up</small>
     </article>
   `).join('');
 }
@@ -348,6 +378,7 @@ function renderAll() {
   renderFunnel();
   renderFollowUps();
   renderLaunchChecklist();
+  renderPaidPilots();
   renderPlans();
   renderOrders();
   renderLeads();
