@@ -17,9 +17,10 @@
         <nav class="nav-list" aria-label="主要功能">
           <a href="#landing">收客頁</a>
           <a href="#dashboard">概覽</a>
-          <a href="#plans">方案</a>
-          <a href="#tickets">跟進事項</a>
-          <a href="#assistant">防騙 FAQ</a>
+          <a href="#funnel">漏斗</a>
+          <a href="#followUps">跟進</a>
+          <a href="#leads">查詢</a>
+          <a href="#outreach">Outreach</a>
           <a href="#reminders">提醒</a>
         </nav>
         <div class="policy-note">
@@ -37,10 +38,10 @@
               <a class="primary-action link-action" href="#authPanel">試用工作台</a>
               <a class="secondary-link" href="#plans">查看月費方案</a>
             </div>
-            <div class="hero-metrics" aria-label="產品指標">
+            <div class="hero-metrics" aria-label="MVP 指標">
               <div><strong>HK$0</strong><span>固定月費起步</span></div>
               <div><strong>3</strong><span>月費方案</span></div>
-              <div><strong>18222</strong><span>防騙提示熱線</span></div>
+              <div><strong>18222</strong><span>防騙熱線提示</span></div>
             </div>
           </div>
           <figure class="hero-visual">
@@ -51,15 +52,15 @@
         <section class="benefit-strip" aria-label="主要賣點">
           <article>
             <h3>防騙先行</h3>
-            <p>所有回覆都避開 OTP、密碼、銀行資料和轉帳指示，疑似詐騙會提示 18222。</p>
+            <p>先拒絕 OTP、銀行資料、轉帳指示和投資建議，疑似詐騙提醒用戶致電 18222。</p>
           </article>
           <article>
             <h3>付款到工單</h3>
-            <p>客戶選月費方案後，系統建立付款訂單，再自動開家庭跟進事項。</p>
+            <p>月費方案付款後自動建立客戶、訂單、工單和提醒，方便遠程營運。</p>
           </article>
           <article>
             <h3>適合遠程營運</h3>
-            <p>先用本機 demo 和 Supabase 接駁位跑通，之後再接 Stripe、WhatsApp 或 AI API。</p>
+            <p>本地 demo 可免費運作，之後接 Supabase、Stripe、WhatsApp 和 AI API 逐步升級。</p>
           </article>
         </section>
 
@@ -89,12 +90,12 @@
               </select>
             </label>
             <label>
-              最想解決的照顧痛點
+              照顧痛點
               <textarea name="painPoint" required placeholder="例如：爸爸成日收到可疑短訊，家人想遠程跟進。"></textarea>
             </label>
             <label class="checkbox-label">
               <input name="consent" type="checkbox" required>
-              我同意提交聯絡資料作試用跟進用途，並明白不要提交密碼、OTP、銀行資料或醫療診斷資料。
+              我同意 SilverCare 用以上資料聯絡我跟進試用查詢；請勿提交密碼、OTP、銀行資料或醫療診斷內容。
             </label>
             <button class="primary-action" type="submit">提交試用查詢</button>
           </form>
@@ -102,14 +103,17 @@
 
         <header class="topbar">
           <div>
-            <p class="eyebrow">可銷售 MVP Demo</p>
-            <h2>為在外子女自動跟進父母的防騙、覆診、食藥和家庭待辦</h2>
+            <p class="eyebrow">零成本 SaaS MVP Demo</p>
+            <h2>本地先跑通收客、付款、工單、AI 客服和提醒流程</h2>
           </div>
           <div class="topbar-actions">
             <div class="storage-chip">
               <span id="storageStatus">載入中</span>
               <small id="storageDetail">正在準備 demo 資料</small>
             </div>
+            <button class="icon-button" id="exportBackupButton" type="button" aria-label="匯出備份" title="匯出備份">⇩</button>
+            <button class="icon-button" id="importBackupButton" type="button" aria-label="匯入備份" title="匯入備份">⇧</button>
+            <input id="importBackupInput" type="file" accept="application/json" hidden>
             <button class="icon-button" id="resetDemo" type="button" aria-label="重設 demo 資料" title="重設 demo 資料">↻</button>
           </div>
         </header>
@@ -213,12 +217,12 @@
                 <p class="eyebrow">Pricing</p>
                 <h3>選擇月費方案</h3>
               </div>
-              <span class="status-pill" id="checkoutStatus">付款流程模擬</span>
+              <span class="status-pill" id="checkoutStatus">付款流程：模擬</span>
             </div>
             <div class="plans-grid" id="plansGrid"></div>
             <form id="checkoutForm" class="checkout-box">
               <label>
-                你現在最想跟進的長者照顧事項
+                這位家庭最想解決的照顧問題
                 <textarea name="concern" required placeholder="例如：媽媽收到可疑電話，對方要求提供 OTP；爸爸下星期覆診但家人怕忘記。"></textarea>
               </label>
               <button class="primary-action" type="submit">模擬付款並建立跟進事項</button>
@@ -229,7 +233,7 @@
             <div class="section-heading">
               <div>
                 <p class="eyebrow">Payments</p>
-                <h3>付款訂單</h3>
+                <h3>付款記錄</h3>
               </div>
               <span class="status-pill">Provider-ready</span>
             </div>
@@ -292,9 +296,9 @@
             <div class="section-heading">
               <div>
                 <p class="eyebrow">FAQ Bot</p>
-                <h3>防騙與照顧 FAQ</h3>
+                <h3>防騙安全 FAQ</h3>
               </div>
-              <span class="status-pill">無 API 成本</span>
+              <span class="status-pill">零 API 模擬</span>
             </div>
             <div class="chat-window" id="chatWindow"></div>
             <form id="chatForm" class="inline-form">
@@ -309,7 +313,7 @@
                 <p class="eyebrow">Scheduler</p>
                 <h3>覆診、食藥與家庭提醒</h3>
               </div>
-              <span class="status-pill">本機排程模擬</span>
+              <span class="status-pill">本機日期模擬</span>
             </div>
             <form id="reminderForm" class="form-grid compact">
               <label>
