@@ -1,4 +1,5 @@
 export const storageKey = 'silvercare-mvp-state';
+const backupVersion = 1;
 
 export function getDefaultState() {
   return {
@@ -31,6 +32,22 @@ export function createMemoryStorage() {
       values.delete(key);
     },
   };
+}
+
+export function buildStateBackup(state, { exportedAt = new Date().toISOString() } = {}) {
+  return JSON.stringify({
+    version: backupVersion,
+    exportedAt,
+    state,
+  }, null, 2);
+}
+
+export function parseStateBackup(payload) {
+  const parsed = JSON.parse(payload);
+  if (parsed.version !== backupVersion || !parsed.state || typeof parsed.state !== 'object') {
+    throw new Error('Invalid SilverCare backup payload');
+  }
+  return parsed;
 }
 
 export function createWebStorageStateStore(storage, key = storageKey) {

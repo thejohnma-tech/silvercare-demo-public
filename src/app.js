@@ -389,6 +389,7 @@ document.querySelector('#leadForm').addEventListener('submit', async (event) => 
       whatsapp: data.get('whatsapp'),
       painPoint: data.get('painPoint'),
       preferredPlan: data.get('preferredPlan'),
+      consent: data.get('consent') === 'on',
     });
     state.leads.unshift(lead);
     event.currentTarget.reset();

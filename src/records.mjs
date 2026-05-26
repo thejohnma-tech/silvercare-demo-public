@@ -57,6 +57,7 @@ export function normalizeStateToRecords(state, workspaceId) {
       status: lead.status,
       follow_up_note: lead.followUpNote ?? '',
       source: lead.source,
+      consent_accepted_at: lead.consentAcceptedAt,
       created_at: lead.createdAt,
       updated_at: lead.updatedAt ?? lead.createdAt,
     })),
@@ -134,6 +135,7 @@ export function hydrateStateFromRecords(records) {
     status: lead.status,
     followUpNote: lead.follow_up_note ?? '',
     source: lead.source,
+    consentAcceptedAt: lead.consent_accepted_at,
     createdAt: lead.created_at,
     updatedAt: lead.updated_at ?? lead.created_at,
   }));

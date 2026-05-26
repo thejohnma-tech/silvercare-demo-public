@@ -1,11 +1,16 @@
 export const leadStatuses = ['New', 'Contacted', 'Trial', 'Converted', 'Lost'];
 
-export function buildLead({ name, whatsapp, painPoint, preferredPlan }) {
+export function buildLead({ name, whatsapp, painPoint, preferredPlan, consent }) {
+  if (!consent) {
+    throw new Error('Lead consent is required before collecting contact details');
+  }
+
   const cleanedWhatsapp = whatsapp.trim();
   if (!/^\+?852\s?\d{4}\s?\d{4}$/.test(cleanedWhatsapp)) {
     throw new Error('WhatsApp must be a Hong Kong number, for example +852 9000 1111');
   }
 
+  const now = new Date().toISOString();
   return {
     id: `LEAD-${Date.now().toString(36).toUpperCase()}`,
     name: name.trim(),
@@ -15,8 +20,9 @@ export function buildLead({ name, whatsapp, painPoint, preferredPlan }) {
     status: 'New',
     followUpNote: '',
     source: 'landing',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    consentAcceptedAt: now,
+    createdAt: now,
+    updatedAt: now,
   };
 }
 
@@ -67,6 +73,7 @@ export function buildLeadCsv(leads) {
     'followUpNote',
     'painPoint',
     'source',
+    'consentAcceptedAt',
     'createdAt',
   ];
 
