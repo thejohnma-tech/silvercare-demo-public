@@ -28,6 +28,7 @@ import { buildOrder, createCheckoutProvider } from './payments.mjs';
 import {
   buildPaidPilotDashboard,
   buildPilotFromLead,
+  buildPilotTrackerCsv,
   updatePilotOutcome,
 } from './pilots.mjs';
 import {
@@ -507,6 +508,10 @@ document.querySelector('#paidPilotAlerts').addEventListener('submit', async (eve
   });
   await persistState();
   renderAll();
+});
+
+document.querySelector('#exportPilotsButton').addEventListener('click', () => {
+  downloadTextFile('silvercare-paid-pilots.csv', buildPilotTrackerCsv(state.paidPilots ?? []));
 });
 
 document.querySelector('#exportLeadsButton').addEventListener('click', () => {
